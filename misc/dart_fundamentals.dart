@@ -6,6 +6,7 @@
 
 // dart는 컴파일시 (파일 실행시) main 함수를 찾습니다.
 // `main` 함수가 없으면 프로그램이 실행되지 않습니다.
+
 void main() {
   // 이 안에 테스트 해보고 싶은 코드를 작성해보세요.
 }
@@ -353,12 +354,12 @@ void operators() {
   1 < 2 ? 1 : 2; // 1
 
   // Null-aware operators
-  // `??` operator returns the value of its left-hand side operand if it is not null;
-  // otherwise, it evaluates the right-hand side operand and returns its result.
+  // `??` 연산자는 왼쪽 피연산자가 null이 아닌 경우 왼쪽 피연산자의 값을 반환합
+  // 왼쪽 피연산자가 null인 경우 오른쪽 피연산자를 반환합니다.
   1 ?? 2; // 1
   null ?? 2; // 2
-  // `?.` operator returns the value of its left-hand side operand if it is not null;
-  // otherwise, it returns null.
+  // `?.` 연산자는 chain이 되는 피연산자가 null이 아닌 경우 왼쪽 피연산자의 값을 반환합니다.
+  // chain이 되는 피연산자가 null인 경우 null을 반환합니다.
   String? s = null;
   s?.length; // null
 
@@ -368,6 +369,16 @@ void operators() {
     ..add(5)
     ..add(6);
   print(y); // [1, 2, 3, 4, 5, 6]
+
+  // Spread operator
+  // Spread operator는 List나 Map 등의 collection literal의 요소들을 기존의 그것에 추가하는데 사용됩니다.
+  List<int> z = [11, 12, 13];
+  List<int> newList = [1, 2, 3, ...z, 4, 5, 6];
+  print(newList); // [1, 2, 3, 11, 12, 13, 4, 5, 6]
+
+  Map<String, int> map = {"a": 1, "b": 2, "c": 3};
+  Map<String, int> newMap = {"x": 10, "y": 20, "z": 30, ...map};
+  print(newMap); // {x: 10, y: 20, z: 30, a: 1, b: 2, c: 3}
 }
 
 // =======================================================
@@ -401,12 +412,19 @@ int addWithOptionalNamedArguments({required int a, int b = 0}) {
 }
 
 void functions() {
-  // In Dart, you can define functions using the 'function' keyword.
-  // Functions can have positional arguments, named arguments, and return values.
+  // Named functions
   int x = addWithRequiredPositionalArguments(1, 2); // 3
   int y = addWithOptionalPositionalArguments(1); // 1
   int z = addWithRequiredNamedArguments(a: 1, b: 2); // 3
   int w = addWithOptionalNamedArguments(a: 1); // 1
+
+  // Anonymous functions
+  // 익명 함수는 람다 함수(lambda function)라고도 불립니다.
+  // map, filter, reduce 등의 함수형 프로그래밍 기법을 사용할 때 유용합니다.
+  List<int> list = [1, 2, 3];
+  // 아래 예시에서는 list의 각 요소를 2배로 만들어 새로운 List를 반환합니다.
+  // `(e) => e * 2`와 같은 익명 함수가 사용되었습니다.
+  List<int> newList = list.map((e) => e * 2).toList();
 }
 
 // =======================================================
@@ -611,6 +629,11 @@ class Cat extends Animal {
 // =============== 7. abstract classes =================
 // =======================================================
 
+// 추상클래스는 인스턴스를 생성할 수 없는 클래스입니다.
+//
+// 추상클래스는 주로 여러 클래스에서 공통적으로 사용되는,
+// 또는 구현되어야 하는 메서드나 프로퍼티를 명세하는 역할을 합니다.
+
 abstract class Food {
   String name;
   String? description;
@@ -672,7 +695,7 @@ class Duck extends Animal with Flyable, Swimmable {
 }
 
 // =======================================================
-// ===================== 7. enums =======================
+// ===================== 8. enums =======================
 // =======================================================
 
 // enum은 어떤 값이 한정된 범위 내에 있음을 명시할 때 사용합니다.
@@ -701,4 +724,75 @@ extension ComputerX on Computer {
   bool isMobile() {
     return this == Computer.tablet || this == Computer.smartphone;
   }
+}
+
+// =============================================================
+// =============== 9. Asynchronous Programming =================
+// =============================================================
+
+// Future
+// Future는 비동기적으로 값을 반환하는 함수를 호출할 때 사용합니다.
+// 주로 API 호출이나 파일 읽기 등의 작업을 수행할 때 사용합니다.
+
+// Future를 반환하는 함수를 정의합니다.
+Future<String> fetchUserOrder() {
+  // Imagine that this function is
+  // more complex and slow.
+  return Future.delayed(
+    Duration(seconds: 2),
+    () => 'Large Latte',
+  );
+}
+
+Future<void> printUserOrder() {
+  return Future.delayed(
+    Duration(seconds: 2),
+    () => print('Large Latte'),
+  );
+}
+
+// async 키워드를 사용하여 비동기 함수임을 명시합니다.
+// async 함수는 항상 Future를 반환합니다.
+// async 키워드 없이 await 키워드를 사용할 수 없습니다.
+Future<void> futureExample() async {
+  // await 키워드를 사용하여 Future가 완료될 때까지 기다립니다.
+  //
+  // await 키워드를 사용하지 않으면 Future 작업을 기다리지 않고 다음 코드를 실행합니다.
+  // 다시 말해, Future 작업과 다음 코드가 (roughly speaking!) 동시에 실행됩니다.
+  //
+  // 위에서 말하는 roughly speaking은 코드가 병렬처리되는 것이 아니기 때문입니다.
+  // dart에서 비동기 함수가 작동하는 방식은 JavaScript의 Promise와 유사합니다.
+  // 자세한 사항은 아래를 참고하세요.
+  // See: https://medium.com/dartlang/dart-asynchronous-programming-isolates-and-event-loops-bffc3e296a6a
+  String order = await fetchUserOrder();
+  print('You order is: $order');
+}
+
+void futureExampleThatDoesNotWait() {
+  // Future 작업을 기다리지 않고 다음 코드를 실행합니다.
+  printUserOrder();
+  print('Fetching your order...');
+}
+
+// Stream
+// Stream은 비동기적으로 여러 개의 값을 반환하는 함수를 호출할 때 사용합니다.
+
+// Stream을 반환하는 함수를 정의합니다.
+// `async*`는 흔히 generator 함수를 정의할 때 사용하는 키워드입니다.
+// generator 함수는 `yield` 키워드를 사용하여 값을 반환합니다.
+Stream<int> countStream(int to) async* {
+  for (int i = 1; i <= to; i++) {
+    // 각 값이 반환되기 전에 1초의 딜레이를 추가합니다.
+    await Future.delayed(Duration(seconds: 1));
+    // yield 키워드를 사용하여 값을 반환합니다.
+    yield i;
+  }
+}
+
+void streamExample() {
+  final stream = countStream(10);
+  stream.listen((event) {
+    // 1초마다 1씩 증가하는 값이 출력됩니다.
+    print(event);
+  });
 }

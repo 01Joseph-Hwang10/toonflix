@@ -10,48 +10,56 @@ class WebtoonCard extends StatelessWidget {
     required this.webtoon,
   });
 
+  void _onTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailScreen(
+          title: webtoon.title,
+          thumb: webtoon.thumb,
+          id: webtoon.id,
+        ),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailScreen(
-              webtoon: webtoon,
-            ),
-            fullscreenDialog: true,
-          ),
-        );
-      },
+      onTap: () => _onTap(context),
       child: Column(
         children: [
           Container(
             width: 250,
             clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 15,
-                  offset: const Offset(10, 10),
-                  color: Colors.black.withOpacity(0.3),
-                )
-              ],
-            ),
+            decoration: _cardDecoration,
             child: Image.network(webtoon.thumb),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Text(
             webtoon.title,
-            style: const TextStyle(
-              fontSize: 22,
-            ),
+            style: _textStyle,
           ),
         ],
       ),
     );
   }
+
+  final BoxDecoration _cardDecoration = const BoxDecoration(
+    borderRadius: BorderRadius.all(
+      Radius.circular(15),
+    ),
+    boxShadow: [
+      BoxShadow(
+        blurRadius: 15,
+        offset: Offset(10, 10),
+        color: Colors.black38,
+      )
+    ],
+  );
+
+  final TextStyle _textStyle = const TextStyle(
+    fontSize: 22,
+  );
 }
